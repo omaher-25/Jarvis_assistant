@@ -1,0 +1,8 @@
+pyttsx3
+pywhatkit
+pyautogui
+Pillow
+requests
+pygame
+SpeechRecognition
+gTTS

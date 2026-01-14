@@ -1,0 +1,17 @@
+{
+  "contacts": {
+    "sumit": "+9186688098**",
+    "didi": "+9180802325**",
+    "papa": "+9190491376**",
+    "me": "+9170301376**"
+  },
+  "features": {
+    "enable_tensorflow": true,
+    "enable_llm": true,
+    "enable_camera": true
+  },
+  "coords": {
+    "close_x": 1900,
+    "close_y": 15
+  }
+}

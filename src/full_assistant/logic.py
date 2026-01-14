@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 import pyttsx3
 import pygame
 import subprocess
@@ -39,6 +40,39 @@ class LogWriter:
         log(message)
     def flush(self):
         pass
+
+
+def load_config():
+    """Load configuration from project root `config.json`. Falls back to defaults."""
+    global CONFIG
+    try:
+        root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+        config_path = os.path.join(root, 'config.json')
+        with open(config_path, 'r', encoding='utf-8') as f:
+            CONFIG = json.load(f)
+            log(f"Loaded config from {config_path}")
+    except Exception:
+        CONFIG = {
+            "contacts": {
+                "sumit": "+9186688098**",
+                "didi": "+9180802325**",
+                "papa": "+9190491376**",
+                "me": "+9170301376**"
+            },
+            "features": {
+                "enable_tensorflow": True,
+                "enable_llm": True,
+                "enable_camera": True
+            },
+            "coords": {
+                "close_x": 1900,
+                "close_y": 15
+            }
+        }
+        log("Using default config values.")
+
+
+load_config()
 
 
 if getattr(sys, 'frozen', False):
@@ -149,6 +183,9 @@ def speak_gtts(text):
 
 def local_llm_stream(prompt, model="gemma2:2b"):
     try:
+        if not CONFIG.get("features", {}).get("enable_llm", True):
+            log("LLM generation is disabled in config.")
+            return
         url = "http://localhost:11434/api/generate"
         payload = {
             "model": model,
@@ -208,7 +245,15 @@ def capture_photo():
             cv2.imwrite(photo_path, frame)
             speak("Analyzing the captured image.")
             log(f"Captured image saved as {photo_path}")
-            aianalyser(photo_path)
+            if CONFIG.get("features", {}).get("enable_tensorflow", True):
+                try:
+                    aianalyser(photo_path)
+                except Exception as e:
+                    log(f"aianalyser error: {e}")
+                    speak("Image analysis failed.")
+            else:
+                log("Image analysis is disabled in config.")
+                speak("Image analysis is disabled in the configuration.")
         else:
             log("Failed to capture image.")
             speak("Sorry, I couldn't capture a photo.")
@@ -319,11 +364,12 @@ def search_on_website(site: str):
 
 def send_image(whom: str):
     whom = whom.lower().strip()
-    contacts = {"sumit": "+918668809839",
-                "didi" : "+918080232567",
-                "papa" : "+919049137649",
-                "me"   : "+917030137649",
-        }
+    contacts = CONFIG.get("contacts", {
+        "sumit": "+9186688098**",
+        "didi": "+9180802325**",
+        "papa": "+9190491376**",
+        "me": "+9170301376**"
+    })
     for name, number in contacts.items():
         if name in whom:
                 speak("Please select an area of the screen to capture.")
@@ -371,11 +417,12 @@ def send_image(whom: str):
 
 def message_(message: str):
     message = message.lower().strip()
-    contacts = {"sumit": "+918668809839",
-                "didi" : "+918080232567",
-                "papa" : "+919049137649",
-                "me"   : "+917030137649",
-                }
+    contacts = CONFIG.get("contacts", {
+        "sumit": "+9186688098**",
+        "didi": "+9180802325**",
+        "papa": "+9190491376**",
+        "me": "+9170301376**"
+    })
     
     for name, number in contacts.items():
         if name in message:
@@ -393,8 +440,11 @@ def message_(message: str):
 
 
 def close_window():
-    # Move the mouse to absolute coordinates (x, y)
-    auto.moveTo(1900, 15) 
+    # Move the mouse to absolute coordinates (x, y) pulled from config
+    coords = CONFIG.get("coords", {})
+    x = coords.get("close_x", 1900)
+    y = coords.get("close_y", 15)
+    auto.moveTo(x, y)
     auto.click()
 
 

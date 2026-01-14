@@ -77,6 +77,35 @@ Run everything from the project root (`full_assistant`).
      - Updating `pip`, `setuptools`, and `wheel`
      - Installing a TensorFlow version compatible with your Python if needed
 
+### Student Quickstart (lightweight)
+
+If you want to run Jarvis for development or demonstration without heavy packages like TensorFlow or OpenCV, use the lightweight requirements and disable heavy features in `config.json`.
+
+1. Create and activate a virtual environment:
+
+```powershell
+python -m venv env
+.\env\Scripts\activate
+```
+
+2. Install the lightweight dependencies:
+
+```powershell
+pip install --upgrade pip
+pip install -r requirements-lite.txt
+```
+
+3. Disable heavy features (optional): open `config.json` and set `enable_tensorflow` and `enable_llm` to `false`.
+
+4. Run the GUI:
+
+```powershell
+.\env\Scripts\activate
+pythonw src/full_assistant/main.py
+```
+
+This mode lets you test GUI, TTS, basic web automation, and WhatsApp features without installing large ML libraries.
+
 ---
 
 ## Running JARVIS
