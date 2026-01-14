@@ -223,7 +223,9 @@ def capture_photo():
 
 def stop_app():
     """Stop the whole application."""
+    global stop_flag
     try:
+        stop_flag = True  # Signal the thread to stop
         speak("Jarvis is shutting down. Goodbye Captain!")
         time.sleep(0.5)
         if pygame.get_init():
@@ -482,6 +484,9 @@ _model = None
 _preprocess_input = None
 _decode_predictions = None
 
+# --- Shutdown flag ---
+stop_flag = False
+
 
 def aianalyser(path: str):
     global _model, _preprocess_input, _decode_predictions
@@ -546,7 +551,7 @@ def jarvis_main():
         speak("Microphone not available. Exiting.")
         return
 
-    while True:
+    while not stop_flag:
         try:
             with mic as source:
                 log("Listening...")

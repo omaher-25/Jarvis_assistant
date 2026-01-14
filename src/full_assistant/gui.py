@@ -56,7 +56,7 @@ def run_gui():
 
     global root
     root = tk.CTk()
-    _tk_root = root
+    logic._tk_root = root  # Share the root with logic.py for shutdown
     root.title("Jarvis")
     root.geometry("550x450")
     root.resizable(False, False)
