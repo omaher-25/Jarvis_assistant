@@ -3,6 +3,8 @@
 
 A voice- and text-controlled assistant for Windows that can browse the web, control your desktop, send WhatsApp messages, analyse images with deep learning, and answer questions via a local LLM.
 
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repo-blue)](https://github.com/omaher-25/Jarvis_assistant)
+
 ---
 
 ## Features
