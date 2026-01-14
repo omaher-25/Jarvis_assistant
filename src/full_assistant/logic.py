@@ -477,27 +477,39 @@ def get_clipboard_image():
     log("No screenshot detected. Exiting.")
 
 
+# --- Global variables for caching ---
+_model = None
+_preprocess_input = None
+_decode_predictions = None
+
+
 def aianalyser(path: str):
+    global _model, _preprocess_input, _decode_predictions
     if not path or not os.path.exists(path):
         log(f"Invalid path for analysis: {path}")
         speak("Image analysis failed: Invalid file.")
         return
 
     try:
-        from tensorflow.keras.applications import MobileNetV2
-        from tensorflow.keras.preprocessing import image
-        from tensorflow.keras.applications.mobilenet_v2 import preprocess_input, decode_predictions
-        import tensorflow as tf
-        import numpy as np
+        if _model is None:
+            from tensorflow.keras.applications import MobileNetV2
+            from tensorflow.keras.preprocessing import image
+            from tensorflow.keras.applications.mobilenet_v2 import preprocess_input, decode_predictions
+            import tensorflow as tf
+            import numpy as np
+            log("Loading MobileNetV2 model...")
+            _model = MobileNetV2(weights="imagenet")
+            _preprocess_input = preprocess_input
+            _decode_predictions = decode_predictions
+            log("Model loaded and cached.")
 
         log("Analyzing...")
-        model = MobileNetV2(weights="imagenet")
         img = tf.keras.preprocessing.image.load_img(path, target_size=(224, 224))
         x = image.img_to_array(img)
         x = np.expand_dims(x, axis=0)
-        x = preprocess_input(x)
-        preds = model.predict(x)
-        decoded = decode_predictions(preds, top=1)[0]
+        x = _preprocess_input(x)
+        preds = _model.predict(x)
+        decoded = _decode_predictions(preds, top=1)[0]
 
         if decoded:
             label, score = decoded[0][1], decoded[0][2]
