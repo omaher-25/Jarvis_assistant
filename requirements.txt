@@ -1,0 +1,15 @@
+customtkinter
+pyttsx3
+pygame
+gtts
+opencv-python
+pyautogui
+pywhatkit
+Pillow
+requests
+tensorflow
+numpy
+pypiwin32
+keyboard
+SpeechRecognition
+PyAudio
