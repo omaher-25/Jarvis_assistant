@@ -197,4 +197,4 @@ Suggestions, bug reports, and pull requests are welcome. Useful areas to contrib
 
 ## License
 
-If you intend to open‑source this project, consider adding a `LICENSE` file (for example, MIT). Until then, treat it as "all rights reserved" by default.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
