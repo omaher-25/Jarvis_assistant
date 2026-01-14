@@ -54,9 +54,9 @@ def load_config():
     except Exception:
         CONFIG = {
             "contacts": {
-                "sumit": "+9186688098**",
-                "didi": "+9180802325**",
-                "papa": "+9190491376**",
+                "friend": "+9186688098**",
+                "sis": "+9180802325**",
+                "dad": "+9190491376**",
                 "me": "+9170301376**"
             },
             "features": {
@@ -365,9 +365,9 @@ def search_on_website(site: str):
 def send_image(whom: str):
     whom = whom.lower().strip()
     contacts = CONFIG.get("contacts", {
-        "sumit": "+9186688098**",
-        "didi": "+9180802325**",
-        "papa": "+9190491376**",
+        "friend": "+9186688098**",
+        "sis": "+9180802325**",
+        "dad": "+9190491376**",
         "me": "+9170301376**"
     })
     for name, number in contacts.items():
@@ -418,9 +418,9 @@ def send_image(whom: str):
 def message_(message: str):
     message = message.lower().strip()
     contacts = CONFIG.get("contacts", {
-        "sumit": "+9186688098**",
-        "didi": "+9180802325**",
-        "papa": "+9190491376**",
+        "friend": "+9186688098**",
+        "sis": "+9180802325**",
+        "dad": "+9190491376**",
         "me": "+9170301376**"
     })
     
