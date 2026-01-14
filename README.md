@@ -81,20 +81,14 @@ Run everything from the project root (`full_assistant`).
 
 ## Running JARVIS
 
-From the project root, double-click `run_jarvis.bat` (Windows) or run:
-
-```powershell
-.\run_jarvis.bat
-```
-
-This automatically activates the virtual environment and starts the app.
+From the project root, double-click `run_jarvis.vbs` (Windows) to start the GUI without a console window.
 
 ### Manual Run (if needed)
-If the batch file doesn't work, activate manually:
+If the VBS file doesn't work, activate manually:
 
 ```powershell
 .\env\Scripts\activate
-python src/full_assistant/main.py
+pythonw src/full_assistant/main.py
 ```
 
 This will open the Jarvis GUI and automatically start the background Jarvis thread.
