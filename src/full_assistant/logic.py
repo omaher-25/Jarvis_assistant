@@ -72,6 +72,20 @@ def load_config():
         log("Using default config values.")
 
 
+def save_config():
+    """Save current CONFIG to config.json file."""
+    try:
+        root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+        config_path = os.path.join(root, 'config.json')
+        with open(config_path, 'w', encoding='utf-8') as f:
+            json.dump(CONFIG, f, indent=2, ensure_ascii=False)
+        log(f"Saved config to {config_path}")
+        return True
+    except Exception as e:
+        log(f"Failed to save config: {e}")
+        return False
+
+
 load_config()
 
 

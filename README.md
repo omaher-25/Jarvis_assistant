@@ -9,16 +9,47 @@ A voice- and text-controlled assistant for Windows that can browse the web, cont
 
 ## Features
 
-- Voice hotword "Jarvis" with continuous listening
-- Text command box in a modern CustomTkinter GUI
-- Local TTS pipeline (Win32 SAPI, pyttsx3, PowerShell, gTTS fallback)
-- Web automation: open sites, search Google / YouTube / Wikipedia / Amazon / Maps / Spotify
-- WhatsApp automation for instant messages and image sending (via pywhatkit)
-- Desktop control: close and minimise the active window
-- Image understanding using MobileNetV2 (TensorFlow/Keras)
-- Screenshot + clipboard analysis workflow
-- Photo capture from webcam and AI-based description
-- Optional local LLM integration (Ollama-style HTTP endpoint) for general Q&A and code generation
+> Highlights: core features are grouped and marked so you can quickly see what works out-of-the-box, what requires external services, and what is optional.
+
+### Core (Immediate / Offline)
+
+- **Text Command UI** — modern `CustomTkinter` GUI with a command textbox and log viewer.
+- **Local TTS** — Windows SAPI + `pyttsx3` pipeline with fallbacks (PowerShell/gTTS) for spoken responses.
+- **Basic Desktop Automation** — move/click automation to `close window` and `minimise window` commands.
+- **Command Router** — `processCommand` maps typed/voice commands to internal actions and falls back to the local LLM when configured.
+
+### Communication (Requires Internet / External Services)
+
+- **WhatsApp Automation** — send instant messages and images using `pywhatkit` (requires WhatsApp Web logged in). Commands: `message <name> <text>`, `send image <name>`.
+- **Web Automation & Search** — Open sites and perform smart searches on Google/YouTube/Wikipedia/Amazon/Maps/Spotify using the `open` and `search` commands.
+
+### Vision & ML (Optional / Heavy Dependencies)
+
+- **Screenshot + Clipboard Analysis** — snip-screen workflow using `ImageGrab` and classification via MobileNetV2.
+- **Webcam Capture & Analyse** — capture photos from the webcam and run AI-based descriptions.
+- **TensorFlow Models** — MobileNetV2 based image recognition (controlled by `enable_tensorflow`).
+
+### Local LLM / Advanced AI (Optional)
+
+- **Local LLM Integration** — Optional Ollama-style HTTP API client (`local_llm_stream`) to generate answers and code snippets; controlled by `enable_llm`.
+
+### Developer / Utilities
+
+- **Logging** — `jarvis_launcher.log` captures runtime activity and exceptions for troubleshooting.
+- **Config Persistence** — `config.json` stores `contacts`, `features`, and `coords`; editable via the Settings UI.
+- **Extensible Command Set** — Add new commands in `logic.py` and expose them through the GUI command box.
+
+### Quick Feature Summary (Defaults)
+
+- `contacts`: preloaded friendly names and numbers (editable via Settings)
+- `features.enable_llm`: `true` (toggle in Settings)
+- `features.enable_tensorflow`: `true` (toggle in Settings)
+- `features.enable_camera`: `true` (toggle in Settings)
+- `coords.close_x`: `1900`
+- `coords.close_y`: `15`
+
+---
+
 
 ---
 
@@ -170,6 +201,24 @@ If a command does not match any of the above, it is forwarded to the local LLM v
 - Or, for code/programming queries, generate code and open it in Notepad (`code.txt`).
 
 > Contacts for WhatsApp can be defined directly in `logic.py`. Add the numbers before using this feature.
+
+---
+
+## Settings (Configurable)
+
+Jarvis exposes a small settings UI and a persistent `config.json` for storing user-configurable options. You can open the Settings from the main GUI by clicking the ⚙ Settings button.
+
+- `contacts`: A mapping of friendly names to phone numbers (must include country code, e.g. `+1234567890`). These names are used by the `message` and `send image` commands.
+- `features`: Feature toggles (boolean) that enable/disable optional subsystems:
+    - `enable_llm` (default: `true`) — enable the local LLM integration used for fallback Q&A and code generation.
+    - `enable_tensorflow` (default: `true`) — enable TensorFlow image analysis features (MobileNetV2).
+    - `enable_camera` (default: `true`) — allow webcam capture and camera-based features.
+- `coords`: Small map of coordinate settings used by desktop automation (example defaults shown below):
+    - `close_x`: 1900
+    - `close_y`: 15
+
+All settings are saved to `config.json` in the project root. Use the Settings window to add/edit/delete contacts, toggle features, and update coordinates. For a full walkthrough see `SETTINGS_GUIDE.md`.
+
 
 ---
 
