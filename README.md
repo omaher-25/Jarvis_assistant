@@ -82,7 +82,7 @@ Run everything from the project root (`full_assistant`).
 1. **Clone the repository**
 
      ```powershell
-     git clone <your-repository-url>
+     git clone https://github.com/omaher-25/Jarvis_assistant.git
      cd full_assistant
      ```
 
@@ -187,7 +187,7 @@ The `processCommand` function in `logic.py` currently supports:
 - `open <site>` – open a website (`open youtube`, `open chat gpt`)
 - `search <query> on <site>` – smart search on Google/YouTube/Wikipedia/Amazon/Maps/Spotify
 - `play <something>` – play a YouTube video via pywhatkit
-- `message <name> <text>` – send instant WhatsApp messages (contacts hard-coded in `logic.py`)
+- `message <name> <text>` – send instant WhatsApp messages 
 - `send image <name>` – snip an area and WhatsApp it to a contact
 - `analyse` / `analyse the image` – snip an area and run image classification
 - `capture image` / `capture` – capture from webcam and analyse
