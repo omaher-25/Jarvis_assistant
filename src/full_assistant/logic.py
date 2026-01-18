@@ -64,9 +64,19 @@ def load_config():
                 "enable_llm": True,
                 "enable_camera": True
             },
-            "coords": {
-                "close_x": 1900,
-                "close_y": 15
+            "llm": {
+                "model": "gemma2:2b",
+                "temperature": 0.5,
+                "max_tokens": 512,
+                "system_prompt": """Follow these rules:
+1. Act as a personal assistant named 'Jarvis'.
+2. Do not use emojis or special characters.
+3. No markdown unless explicitly requested.
+4. For code: output only the code, no extra text.
+5. Be direct and factual.
+6. Keep answers short, ideally one line.
+7. Use numbers to list items.
+8. Call me 'sir' if you need to ask something."""
             }
         }
         log("Using default config values.")
@@ -195,25 +205,27 @@ def speak_gtts(text):
                 pass
 
 
-def local_llm_stream(prompt, model="gemma2:2b"):
+def local_llm_stream(prompt, model=None):
     try:
         if not CONFIG.get("features", {}).get("enable_llm", True):
             log("LLM generation is disabled in config.")
             return
+        
+        # Load LLM settings from config
+        llm_config = CONFIG.get("llm", {})
+        if model is None:
+            model = llm_config.get("model", "gemma2:2b")
+        temperature = llm_config.get("temperature", 0.5)
+        max_tokens = llm_config.get("max_tokens", 512)
+        system_prompt = llm_config.get("system_prompt", "Act as a helpful personal assistant named Jarvis.")
+        
         url = "http://localhost:11434/api/generate"
         payload = {
             "model": model,
-            "prompt": f'''Follow these rules:
-                     1. Act as you are a personal assistant having name is 'Jarvis'.
-                     2. Do not use emojis or any special characters in your answers.
-                     3. Do not add markdown unless I say.
-                     4. When I ask for code or program, output only the code do not include any unnecessary text.
-                     5. Be direct and factual.
-                     6. Give the answer as short as possible, also try to answer in one line if possible.
-                     7. use numbers to list things in your answer if there. 
-                     8. call me 'sir' if you need to ask something.
-                     Now my question: {prompt}''',
-            "stream": False
+            "prompt": f"{system_prompt}\n\nNow my question: {prompt}",
+            "stream": False,
+            "temperature": temperature,
+            "num_predict": max_tokens
         }
         response = requests.post(url, json=payload)
         data = response.json()
@@ -454,11 +466,9 @@ def message_(message: str):
 
 
 def close_window():
-    # Move the mouse to absolute coordinates (x, y) pulled from config
-    coords = CONFIG.get("coords", {})
-    x = coords.get("close_x", 1900)
-    y = coords.get("close_y", 15)
-    auto.moveTo(x, y)
+    # Move the mouse to close the active window
+    # Default coordinates for typical Windows window close button
+    auto.moveTo(1900, 15)
     auto.click()
 
 

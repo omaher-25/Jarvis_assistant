@@ -14,5 +14,11 @@
   "coords": {
     "close_x": 1900,
     "close_y": 15
+  },
+  "llm": {
+    "model": "gemma2:2b",
+    "temperature": 0.5,
+    "max_tokens": 512,
+    "system_prompt": "Follow these rules:\n1. Act as a personal assistant named 'Jarvis', and my name is <your_name>.\n2. Do not use emojis or special characters.\n3. No markdown unless explicitly requested.\n4. For code: output only the code, no extra text.\n5. Be direct and factual.\n6. Keep answers short, ideally one line.\n7. Use numbers to list items."
   }
 }

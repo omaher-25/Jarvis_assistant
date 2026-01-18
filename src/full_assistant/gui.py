@@ -58,18 +58,18 @@ def open_settings_window():
     """Open settings window for managing contacts and configuration."""
     settings_window = tk.CTkToplevel(root)
     settings_window.title("Settings")
-    settings_window.geometry("700x500")
+    settings_window.geometry("800x650")
     settings_window.resizable(False, False)
     settings_window.grab_set()  # Make modal
     
     # Create tabview
-    tabview = tk.CTkTabview(settings_window, width=680, height=450)
+    tabview = tk.CTkTabview(settings_window, width=780, height=600)
     tabview.pack(padx=10, pady=10, fill="both", expand=True)
     
     # Add tabs
     contacts_tab = tabview.add("Contacts")
     features_tab = tabview.add("Features")
-    coords_tab = tabview.add("Coordinates")
+    llm_tab = tabview.add("LLM Settings")
     
     # ===== CONTACTS TAB =====
     contacts_frame = tk.CTkFrame(contacts_tab)
@@ -277,44 +277,71 @@ def open_settings_window():
     
     tk.CTkButton(features_frame, text="Save Features", command=save_features, width=200).pack(pady=20)
     
-    # ===== COORDINATES TAB =====
-    coords_frame = tk.CTkFrame(coords_tab)
-    coords_frame.pack(fill="both", expand=True, padx=10, pady=10)
+    # ===== LLM SETTINGS TAB =====
+    llm_scroll = tk.CTkScrollableFrame(llm_tab, fg_color="transparent")
+    llm_scroll.pack(fill="both", expand=True, padx=10, pady=10)
     
-    tk.CTkLabel(coords_frame, text="Window Close Coordinates", font=tk.CTkFont(size=16, weight="bold")).pack(pady=20)
-    tk.CTkLabel(coords_frame, text="Set the screen coordinates for the close button position", 
-                font=tk.CTkFont(size=11)).pack(pady=5)
+    llm_frame = tk.CTkFrame(llm_scroll, fg_color="transparent")
+    llm_frame.pack(fill="both", expand=True)
     
-    coords = logic.CONFIG.get("coords", {})
+    tk.CTkLabel(llm_frame, text="LLM Response Behavior", font=tk.CTkFont(size=16, weight="bold")).pack(pady=20)
     
-    tk.CTkLabel(coords_frame, text="Close Button X Position:", font=tk.CTkFont(size=12)).pack(pady=(20, 5))
-    close_x_entry = tk.CTkEntry(coords_frame, width=200, placeholder_text="1900")
-    close_x_entry.insert(0, str(coords.get("close_x", 1900)))
-    close_x_entry.pack(pady=5)
+    llm_config = logic.CONFIG.get("llm", {})
     
-    tk.CTkLabel(coords_frame, text="Close Button Y Position:", font=tk.CTkFont(size=12)).pack(pady=(20, 5))
-    close_y_entry = tk.CTkEntry(coords_frame, width=200, placeholder_text="15")
-    close_y_entry.insert(0, str(coords.get("close_y", 15)))
-    close_y_entry.pack(pady=5)
+    # Model name
+    tk.CTkLabel(llm_frame, text="Model Name:", font=tk.CTkFont(size=12)).pack(pady=(10, 5))
+    model_entry = tk.CTkEntry(llm_frame, width=300, placeholder_text="gemma2:2b")
+    model_entry.insert(0, llm_config.get("model", "gemma2:2b"))
+    model_entry.pack(pady=5)
     
-    def save_coords():
+    # Temperature slider
+    tk.CTkLabel(llm_frame, text="Temperature (0.0 - 1.0): Controls randomness", font=tk.CTkFont(size=11)).pack(pady=(15, 5))
+    temp_var = tk.DoubleVar(value=llm_config.get("temperature", 0.5))
+    temp_slider = tk.CTkSlider(llm_frame, from_=0.0, to=1.0, variable=temp_var, width=300)
+    temp_slider.pack(pady=5)
+    temp_label = tk.CTkLabel(llm_frame, text=f"Current: {temp_var.get():.2f}", font=tk.CTkFont(size=10))
+    temp_label.pack()
+    temp_slider.configure(command=lambda v: temp_label.configure(text=f"Current: {float(v):.2f}"))
+    
+    # Max tokens
+    tk.CTkLabel(llm_frame, text="Max Tokens (response length):", font=tk.CTkFont(size=12)).pack(pady=(15, 5))
+    tokens_entry = tk.CTkEntry(llm_frame, width=200, placeholder_text="512")
+    tokens_entry.insert(0, str(llm_config.get("max_tokens", 512)))
+    tokens_entry.pack(pady=5)
+    
+    # System prompt / behavior
+    tk.CTkLabel(llm_frame, text="System Instructions (response style):", font=tk.CTkFont(size=12, weight="bold")).pack(pady=(20, 5))
+    prompt_text = tk.CTkTextbox(llm_frame, height=200, width=380, font=("Courier", 10))
+    default_prompt = llm_config.get("system_prompt", """Follow these rules:
+1. Act as a personal assistant named 'Jarvis'.
+2. Do not use emojis or special characters.
+3. No markdown unless explicitly requested.
+4. For code: output only the code, no extra text.
+5. Be direct and factual.
+6. Keep answers short, ideally one line.
+7. Use numbers to list items.
+8. Call me 'sir' if you need to ask something.""")
+    prompt_text.insert("1.0", default_prompt)
+    prompt_text.pack(pady=5, padx=5, fill="both", expand=True)
+    
+    def save_llm_config():
         try:
-            close_x = int(close_x_entry.get().strip())
-            close_y = int(close_y_entry.get().strip())
+            if "llm" not in logic.CONFIG:
+                logic.CONFIG["llm"] = {}
             
-            if "coords" not in logic.CONFIG:
-                logic.CONFIG["coords"] = {}
-            
-            logic.CONFIG["coords"]["close_x"] = close_x
-            logic.CONFIG["coords"]["close_y"] = close_y
+            logic.CONFIG["llm"]["model"] = model_entry.get().strip() or "gemma2:2b"
+            logic.CONFIG["llm"]["temperature"] = float(temp_var.get())
+            logic.CONFIG["llm"]["max_tokens"] = int(tokens_entry.get().strip() or 512)
+            logic.CONFIG["llm"]["system_prompt"] = prompt_text.get("1.0", "end-1c").strip()
             
             if save_config():
-                messagebox.showinfo("Success", "Coordinates updated successfully!")
-                log(f"Coordinates updated: close_x={close_x}, close_y={close_y}")
+                messagebox.showinfo("Success", "LLM settings updated successfully!")
+                log("LLM configuration updated")
         except ValueError:
-            messagebox.showerror("Error", "Please enter valid integer values!")
+            messagebox.showerror("Error", "Invalid temperature (use 0.0-1.0) or tokens (use integer)!")
     
-    tk.CTkButton(coords_frame, text="Save Coordinates", command=save_coords, width=200).pack(pady=20)
+    tk.CTkButton(llm_frame, text="Save LLM Settings", command=save_llm_config, width=200, height=40,
+                fg_color="#0891B2", hover_color="#0E7490").pack(pady=15)
     
     # Close button at bottom — improved visibility and keyboard shortcuts
     bottom_frame = tk.CTkFrame(settings_window, fg_color="transparent")

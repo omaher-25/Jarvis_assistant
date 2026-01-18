@@ -213,16 +213,13 @@ Jarvis exposes a small settings UI and a persistent `config.json` for storing us
     - `enable_llm` (default: `true`) — enable the local LLM integration used for fallback Q&A and code generation.
     - `enable_tensorflow` (default: `true`) — enable TensorFlow image analysis features (MobileNetV2).
     - `enable_camera` (default: `true`) — allow webcam capture and camera-based features.
-- `coords`: Small map of coordinate settings used by desktop automation (example defaults shown below):
-    - `close_x`: 1900
-    - `close_y`: 15
+- `llm`: LLM behavior and response configuration (configure how the assistant responds):
+  - `model` (default: `"gemma2:2b"`) — name of the local LLM model to use (must be available in Ollama).
+  - `temperature` (default: `0.5`, range 0.0–1.0) — controls randomness/creativity. Lower = more deterministic, higher = more random.
+  - `max_tokens` (default: `512`) — maximum response length in tokens (limits how long answers can be).
+  - `system_prompt` (default: custom instructions) — system instructions that define assistant behavior, personality, and response style.
 
-All settings are saved to `config.json` in the project root. Use the Settings window to add/edit/delete contacts, toggle features, and update coordinates. For a full walkthrough see `SETTINGS_GUIDE.md`.
-
-
----
-
-## Local LLM Integration
+All settings are saved to `config.json` in the project root. Use the Settings window to add/edit/delete contacts, toggle features, and customize LLM response behavior. For a full walkthrough see `SETTINGS_GUIDE.md`.
 
 The assistant talks to a local model using an Ollama-style HTTP API:
 
